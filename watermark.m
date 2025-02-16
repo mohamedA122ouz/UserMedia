@@ -13,6 +13,7 @@ watermarkPath = "watermark.png";
 if argsLength == 3
     watermarkPath = args{3};
 endif
+
 % Read the input image and watermark
 img = imread(input_image);
 watermark = imread(watermarkPath);
@@ -33,8 +34,8 @@ watermark_bw = repmat(watermark_bw, [1, 1, 3]);
 [r, c, ~] = size(img);
 [wr, wc, ~] = size(watermark_bw);
 
-% Calculate the scaling factor to make the watermark ~10% of the input image
-target_width = c * 0.15; % Target width is 10% of the image width
+% Calculate the scaling factor to make the watermark ~15% of the input image width
+target_width = c * 0.15; % Target width is 15% of the image width
 scale_factor = target_width / wc;
 
 % Resize the watermark using the calculated scaling factor
@@ -59,11 +60,15 @@ for ir = 1:wr
     end
 end
 
+% Resize the final image to 320px width while keeping the aspect ratio
+new_width = 320;
+new_height = round((new_width / c) * r); % Maintain aspect ratio
+img_resized = imresize(img, [new_height, new_width]);
+
 % Save the resultant image
-imwrite(img, output_image);
+imwrite(img_resized, output_image);
 
-fprintf("Watermarked image saved to: %s\n", output_image);
-
+fprintf("Watermarked image saved to: %s (Resized to %dx%d)\n", output_image, new_width, new_height);
 
 %octave --silent watermark.m input_image.jpg output_image.jpg
 %octave --silent watermark.m "E:\myDesktop\wallpaper\wallpaperflare.com_wallpaper (15).jpg" output_image.jpg
